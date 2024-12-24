@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { routeTree } from "./routeTree.gen";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
-import NotificationList from "./components/NotificationList";
 const queryClient = new QueryClient();
 const router = createRouter({ routeTree });
 declare module "@tanstack/react-router" {
@@ -17,7 +16,6 @@ declare module "@tanstack/react-router" {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NotificationProvider>
-      <NotificationList />
       <QueryClientProvider client={queryClient}>
         <UserProvider>
           <RouterProvider router={router} />
