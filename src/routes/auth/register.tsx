@@ -1,14 +1,27 @@
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-
+import { createUser } from "../../api/userApi";
 export const Route = createFileRoute("/auth/register")({
   component: Register,
 });
 
 function Register() {
   const [username, setUsername] = useState<string>("");
-  
-  const handleSubmit = () => {};
+  const [error, setError] = useState<string | null>(null);
+  const {} = useMutation({
+    mutationKey: ["createUser", username],
+    mutationFn: createUser,
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
+  const handleSubmit = () => {
+    if (username.trim() === "") {
+      alert("Username is required");
+      return;
+    }
+  };
   return (
     <div className="bg-black h-screen w-full flex justify-center items-center  flex-col">
       <p className="text-white mb-4">

@@ -1,7 +1,8 @@
 export const initializePortfolio = async (username: string) => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   try {
     const response = await fetch(
-      `http://localhost:8080/api/portfolio/initialize/${username}`,
+      `${BACKEND_URL}/api/portfolio/initialize/${username}`,
       {
         method: "POST",
         headers: {
@@ -23,9 +24,10 @@ export const initializePortfolio = async (username: string) => {
 };
 
 export const getPortfolioValue = async (userId: string) => {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   try {
     const response = await fetch(
-      `http://localhost:8080/api/portfolio/value/${userId}`,
+      `${BACKEND_URL}/api/portfolio/value/${userId}`,
       {
         method: "GET",
         headers: {
