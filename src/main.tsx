@@ -7,12 +7,15 @@ import { routeTree } from "./routeTree.gen";
 import { UserProvider } from "./context/UserContext";
 import { NotificationProvider } from "./context/NotificationContext";
 const queryClient = new QueryClient();
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+});
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <NotificationProvider>

@@ -47,7 +47,7 @@ export const getUserByUsername = async (username: string) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   try {
     const response = await fetch(
-      `h${BACKEND_URL}/api/users/username/${username}`,
+      `${BACKEND_URL}/api/users/username/${username}`,
       {
         method: "GET",
         headers: {

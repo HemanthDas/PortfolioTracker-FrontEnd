@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { createUser } from "../../api/userApi";
 import { initializePortfolio } from "../../api/portfolioApi";
 import { useUser } from "../../hooks/customHook";
@@ -8,13 +8,24 @@ import { useNotification } from "../../hooks/customHook";
 
 export const Route = createFileRoute("/auth/register")({
   component: Register,
+  beforeLoad: () => {
+    console.log("Checking if user is already logged in...");
+    if (localStorage.getItem("user")) {
+      throw redirect({ to: "/dashboard", replace: true });
+    }
+  },
 });
 
 function Register() {
   const [username, setUsername] = useState<string>("");
-  const { setUser } = useUser();
+  const naviagte = useNavigate();
+  const { setUser, user } = useUser();
   const { addNotification } = useNotification();
-
+  useEffect(() => {
+    if (user) {
+      naviagte({ to: "/dashboard", replace: true });
+    }
+  }, [user, naviagte]);
   const createUserMutation = useMutation({
     mutationKey: ["createUser"],
     mutationFn: async () => {
@@ -38,8 +49,12 @@ function Register() {
     mutationFn: async () => {
       return await initializePortfolio(username);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       addNotification("success", "Portfolio initialized successfully!");
+      addNotification("success", "Redirecting to dashboard...");
+      setTimeout(() => {
+        naviagte({ to: "/dashboard", replace: true });
+      }, 1000);
     },
     onError: (error: Error) => {
       addNotification(
