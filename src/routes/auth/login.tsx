@@ -9,15 +9,15 @@ export const Route = createFileRoute("/auth/login")({
 });
 
 function Login() {
-  const { setUser, user } = useUser();
+  const { setUser, user, isLoading } = useUser();
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
   const { addNotification } = useNotification();
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
       navigate({ to: "/dashboard", replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, isLoading]);
   const loginUserMutation = useMutation({
     mutationKey: ["loginUser"],
     mutationFn: async () => {

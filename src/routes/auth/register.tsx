@@ -19,13 +19,13 @@ export const Route = createFileRoute("/auth/register")({
 function Register() {
   const [username, setUsername] = useState<string>("");
   const naviagte = useNavigate();
-  const { setUser, user } = useUser();
+  const { setUser, user, isLoading } = useUser();
   const { addNotification } = useNotification();
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
       naviagte({ to: "/dashboard", replace: true });
     }
-  }, [user, naviagte]);
+  }, [user, naviagte, isLoading]);
   const createUserMutation = useMutation({
     mutationKey: ["createUser"],
     mutationFn: async () => {

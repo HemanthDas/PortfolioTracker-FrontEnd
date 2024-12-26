@@ -8,11 +8,11 @@ export const Route = createFileRoute("/dashboard/")({
 
 function RouteComponent() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   useEffect(() => {
-    if (!user) {
+      if (!isLoading && !user) {
       navigate({ to: "/auth/login", replace: true });
     }
-  }, []);
+  }, [user, navigate, isLoading]);
   return <div>Hello "/dashboard/"!</div>;
 }
