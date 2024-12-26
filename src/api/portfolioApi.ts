@@ -23,7 +23,7 @@ export const initializePortfolio = async (username: string) => {
   }
 };
 
-export const getPortfolioValue = async (userId: string) => {
+export const getPortfolioValue = async (userId: number) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   try {
     const response = await fetch(

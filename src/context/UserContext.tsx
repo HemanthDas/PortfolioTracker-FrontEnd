@@ -1,7 +1,7 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
 
 // Define the User type
-type User = {
+export type User = {
   id: number;
   username: string;
 };
