@@ -146,7 +146,7 @@ function RouteComponent() {
                     {stock.name} ({stock.ticker})
                   </p>
                   <p className="text-gray-600">Quantity: {stock.quantity}</p>
-                  <p className="text-gray-600">Buy Price: ${stock.buyPrice}</p>
+                  <p className="text-gray-600">Bought Price: ${stock.buyPrice}</p>
                 </li>
               ))}
             </ul>
