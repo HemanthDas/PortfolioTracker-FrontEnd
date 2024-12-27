@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useNotification, useUser } from "../../hooks/customHook";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -45,7 +45,7 @@ function Login() {
   };
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-screen w-full flex items-center justify-center">
-      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg min-w-[300px] h-[250px] flex flex-col">
+      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg min-w-[300px] h-[300px] flex flex-col">
         <h1 className="text-2xl font-bold mb-6 self-center text-gray-800">
           Login
         </h1>
@@ -78,6 +78,15 @@ function Login() {
             {loginUserMutation.status === "pending" ? "Processing..." : "Login"}
           </button>
         </form>
+        <div className="mt-4 text-center">
+          <span className="text-sm text-gray-600">Don't have an account? </span>
+          <Link
+            to="/auth/register"
+            className="text-sm text-purple-600 hover:underline"
+          >
+            Register
+          </Link>
+        </div>
       </div>
     </div>
   );

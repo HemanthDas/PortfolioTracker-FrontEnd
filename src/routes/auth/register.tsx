@@ -1,5 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { createUser } from "../../api/userApi";
 import { initializePortfolio } from "../../api/portfolioApi";
@@ -77,7 +82,7 @@ function Register() {
 
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 h-screen w-full flex items-center justify-center">
-      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg min-w-[300px] h-[250px] flex flex-col">
+      <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg min-w-[300px] h-[300px] flex flex-col">
         <h1 className="text-2xl font-bold mb-6 self-center text-gray-800">
           Register
         </h1>
@@ -116,6 +121,16 @@ function Register() {
               : "Register"}
           </button>
         </form>
+        {/* <p className="mt-4 text-center text-gray-600"> */}
+        <span className="text-center mt-4 text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/auth/login"
+            className="text-purple-600 hover:text-purple-800"
+          >
+            Login
+          </Link>
+        </span>
       </div>
     </div>
   );

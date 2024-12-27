@@ -11,6 +11,7 @@ type UserContextType = {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   isLoading: boolean;
+  logoutUser: () => void;
 };
 
 // Create the UserContext with a default value of null
@@ -34,7 +35,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
     setIsLoading(false); // Set loading to false after user is loaded
   }, []);
-
+  const logoutUser = () => {
+    setUser(null);
+  };
   // Save user data to localStorage whenever it changes
   useEffect(() => {
     if (user) {
@@ -45,7 +48,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   }, [user]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, isLoading, logoutUser }}>
       {isLoading ? <div>Loading...</div> : children}
     </UserContext.Provider>
   );

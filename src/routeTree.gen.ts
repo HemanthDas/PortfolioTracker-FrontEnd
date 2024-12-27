@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as DashboardAddStockImport } from './routes/dashboard/add-stock'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
 
@@ -27,6 +28,12 @@ const IndexRoute = IndexImport.update({
 const DashboardIndexRoute = DashboardIndexImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardAddStockRoute = DashboardAddStockImport.update({
+  id: '/dashboard/add-stock',
+  path: '/dashboard/add-stock',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -67,6 +74,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/add-stock': {
+      id: '/dashboard/add-stock'
+      path: '/dashboard/add-stock'
+      fullPath: '/dashboard/add-stock'
+      preLoaderRoute: typeof DashboardAddStockImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/dashboard'
@@ -83,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 
@@ -90,6 +105,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 
@@ -98,15 +114,32 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/register' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/add-stock'
+    | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/register' | '/dashboard'
-  id: '__root__' | '/' | '/auth/login' | '/auth/register' | '/dashboard/'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/add-stock'
+    | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/register'
+    | '/dashboard/add-stock'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 
@@ -114,6 +147,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  DashboardAddStockRoute: typeof DashboardAddStockRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -121,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  DashboardAddStockRoute: DashboardAddStockRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -137,6 +172,7 @@ export const routeTree = rootRoute
         "/",
         "/auth/login",
         "/auth/register",
+        "/dashboard/add-stock",
         "/dashboard/"
       ]
     },
@@ -148,6 +184,9 @@ export const routeTree = rootRoute
     },
     "/auth/register": {
       "filePath": "auth/register.tsx"
+    },
+    "/dashboard/add-stock": {
+      "filePath": "dashboard/add-stock.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
