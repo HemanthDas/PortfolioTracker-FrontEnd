@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/dashboard/add-stock")({
   component: AddStockComponent,
@@ -11,7 +11,6 @@ import { useNotification, useUser } from "../../hooks/customHook";
 
 interface Errors {
   ticker?: string;
-  name?: string;
   quantity?: string;
   buyPrice?: string;
 }
@@ -19,7 +18,6 @@ interface Errors {
 function AddStockComponent() {
   const [ticker, setTicker] = useState("");
   const navigate = useNavigate();
-  const [name, setName] = useState("");
   const [quantity, setQuantity] = useState<number>(0);
   const [buyPrice, setBuyPrice] = useState<number>(0);
   const [errors, setErrors] = useState<Errors>({});
@@ -46,7 +44,6 @@ function AddStockComponent() {
   const validate = () => {
     const newErrors = {} as Errors;
     if (!ticker) newErrors.ticker = "Ticker is required.";
-    if (!name) newErrors.name = "Stock name is required.";
     if (quantity <= 0) newErrors.quantity = "Quantity must be greater than 0.";
     if (buyPrice <= 0) newErrors.buyPrice = "Buy price must be greater than 0.";
     setErrors(newErrors);
@@ -62,6 +59,14 @@ function AddStockComponent() {
 
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen w-full flex items-center justify-center">
+    <div className="absolute top-4 left-4">
+      <Link
+        to="/dashboard"
+        className="text-white bg-transparent border-2 border-white px-4 py-2 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-500 transition-all duration-300 ease-in-out"
+      >
+        Back
+      </Link>
+    </div>
       <div className="max-w-3xl w-full bg-white rounded-lg shadow-lg p-8 m-4">
         <div className="flex justify-between items-center mb-6 border-b-2 border-gray-300 pb-2">
           <h1 className="text-3xl font-extrabold text-gray-800">
@@ -91,27 +96,6 @@ function AddStockComponent() {
             )}
           </div>
 
-          {/* Name Input */}
-          <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">
-              Stock Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={`mt-2 block w-full border-2 rounded-xl px-4 py-2 text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out ${
-                errors.name ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter stock name"
-              aria-label="Stock Name"
-              required
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-            )}
-          </div>
-
           {/* Quantity Input */}
           <div>
             <label className="block text-lg font-medium text-gray-700 mb-2">
@@ -119,7 +103,7 @@ function AddStockComponent() {
             </label>
             <input
               type="number"
-              value={quantity}
+              value={quantity === 0 ? "" : quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
               className={`mt-2 block w-full border-2 rounded-xl px-4 py-2 text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out ${
                 errors.quantity ? "border-red-500" : "border-gray-300"
@@ -141,7 +125,7 @@ function AddStockComponent() {
             <input
               type="number"
               step="0.01"
-              value={buyPrice}
+              value={buyPrice === 0 ? "" : buyPrice}
               onChange={(e) => setBuyPrice(Number(e.target.value))}
               className={`mt-2 block w-full border-2 rounded-xl px-4 py-2 text-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out ${
                 errors.buyPrice ? "border-red-500" : "border-gray-300"
