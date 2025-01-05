@@ -107,8 +107,8 @@ function RouteComponent() {
             </Link>
             <button
               onClick={() => {
-          logoutUser();
-          navigate({ to: "/auth/login" });
+                logoutUser();
+                navigate({ to: "/auth/login" });
               }}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200"
             >
@@ -138,16 +138,19 @@ function RouteComponent() {
           {stocks?.data?.length > 0 ? (
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {stocks?.data.map((stock: StockType, index: number) => (
-                <li
+                <Link
                   key={index}
+                  to={`/dashboard/${stock.ticker}`}
                   className="p-6 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300 rounded-lg shadow hover:shadow-md transition-shadow duration-200"
                 >
                   <p className="text-lg font-bold text-gray-800">
                     {stock.name} ({stock.ticker})
                   </p>
                   <p className="text-gray-600">Quantity: {stock.quantity}</p>
-                  <p className="text-gray-600">Bought Price: ${stock.buyPrice}</p>
-                </li>
+                  <p className="text-gray-600">
+                    Bought Price: ${stock.buyPrice}
+                  </p>
+                </Link>
               ))}
             </ul>
           ) : (

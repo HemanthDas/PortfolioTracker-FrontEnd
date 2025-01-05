@@ -1,7 +1,6 @@
 import {
   createFileRoute,
   Link,
-  useLoaderData,
   useNavigate,
   useParams,
 } from "@tanstack/react-router";
@@ -9,24 +8,15 @@ import {
   getStockByUserIdAndSymbol,
   getStockDetailsBySymbol,
   getIntradayDataBySymbol,
-} from "../../api/stockApi";
-import { useUser } from "../../hooks/customHook";
+  deleteStock,
+} from "../../../api/stockApi";
+import { useUser } from "../../../hooks/customHook";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import Chart from "../../utils/Chart";
+import Chart from "../../../utils/Chart";
+import { useNotification } from "../../../hooks/customHook";
 
-export const Route = createFileRoute("/dashboard/$stockId")({
-  loader: async ({ params }) => {
-    try {
-      const res = await getStockDetailsBySymbol(params.stockId);
-      if (!res) {
-        return { status: 404 };
-      }
-      return { status: 200, data: res as StockDetails };
-    } catch (error) {
-      return { status: 500, error };
-    }
-  },
+export const Route = createFileRoute("/dashboard/$stockId/")({
   component: RouteComponent,
 });
 
@@ -42,14 +32,17 @@ type StockDetails = {
   };
 };
 
+type IntradayDataPoint = {
+  time: string;
+  price: number;
+};
+
 function RouteComponent() {
-  const { data, status } = useLoaderData({ from: "/dashboard/$stockId" });
-  const { stockId } = useParams({
-    from: "/dashboard/$stockId",
-  });
+  const { stockId } = useParams({ from: "/dashboard/$stockId/" });
   const { user, isLoading: isUserAuthLoading } = useUser();
+  const { addNotification } = useNotification();
   const navigate = useNavigate();
-  const stockDetail = data?.data;
+
   useEffect(() => {
     if (!isUserAuthLoading && !user) {
       navigate({ to: "/auth/login" });
@@ -57,68 +50,141 @@ function RouteComponent() {
   }, [user, isUserAuthLoading, navigate]);
 
   const {
+    data: stockDetail,
+    isLoading: isStockDetailLoading,
+    isError: isStockDetailError,
+    error: stockDetailError,
+  } = useQuery({
+    queryKey: ["stockDetail", stockId],
+    queryFn: async () => {
+      const res = await getStockDetailsBySymbol(stockId);
+      if (!res) {
+        throw new Error("Stock not found");
+      }
+      if (res.success === false) {
+        throw new Error(res.message);
+      }
+      return res as StockDetails;
+    },
+    enabled: !!stockId,
+  });
+
+  const {
     data: stockData,
-    status: stockDataStatus,
+    isLoading: isStockDataLoading,
+    isError: isStockDataError,
     error: stockDataError,
   } = useQuery({
-    queryKey: ["stock", stockDetail?.Symbol],
+    queryKey: ["stock", stockDetail?.data.Symbol],
     queryFn: async () => {
       if (!user) {
-        throw new Error("user not found.");
+        throw new Error("User not authenticated.");
       }
       return await getStockByUserIdAndSymbol(user?.id, stockId);
     },
-    enabled: !!user,
+    enabled: !!user && !!stockId,
   });
-  type IntradayDataPoint = {
-    time: string; // e.g., "10:30", "11:00"
-    price: number; // Stock price at this time
-  };
-  const calculateStats = (data: IntradayDataPoint[]) => {
-    const prices = data.map((point) => point.price);
-    return {
-      high: Math.max(...prices),
-      low: Math.min(...prices),
-      open: data[data.length - 1].price, // Oldest data point
-      close: data[0].price, // Most recent data point
-    };
-  };
+
   const {
     data: intradayData,
-    status: intradayDataStatus,
+    isLoading: isIntradayDataLoading,
+    isError: isIntradayDataError,
     error: intradayDataError,
   } = useQuery({
-    queryKey: ["intraday", stockDetail?.Symbol],
+    queryKey: ["intraday", stockDetail?.data.Symbol],
     queryFn: async () => {
       if (!stockId) {
-        throw new Error("Stock symbol not found.");
+        throw new Error("Stock symbol not provided.");
       }
       return await getIntradayDataBySymbol(stockId);
     },
     enabled: !!stockId,
   });
 
-  if (stockDataStatus === "pending" || intradayDataStatus === "pending") {
-    return <div className="text-white text-2xl">Loading...</div>;
-  }
+  const calculateStats = (data: IntradayDataPoint[]) => {
+    const prices = data.map((point) => point.price);
+    return {
+      high: Math.max(...prices),
+      low: Math.min(...prices),
+      open: data[data.length - 1]?.price || 0,
+      close: data[0]?.price || 0,
+    };
+  };
 
-  if (stockDataStatus === "error" || intradayDataStatus === "error") {
+  const transformedData =
+    intradayData?.data["Time Series (5min)"] &&
+    Object.entries(intradayData.data["Time Series (5min)"]).map(
+      ([time, values]) => ({
+        time,
+        price: parseFloat((values as { [key: string]: string })["4. close"]),
+      })
+    );
+
+  const handleUpdate = () =>
+    navigate({ to: `/dashboard/${stockId}/update-stock` });
+  const handleDelete = async () => {
+    try {
+      if (!user) {
+        throw new Error("User not authenticated.");
+      }
+      await deleteStock(stockData.data.id);
+      addNotification("success", "Stock deleted successfully");
+      navigate({ to: "/dashboard" });
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to delete stock";
+      addNotification("error", errorMessage);
+    }
+  };
+
+  if (
+    isUserAuthLoading ||
+    isStockDetailLoading ||
+    isStockDataLoading ||
+    isIntradayDataLoading
+  ) {
     return (
-      <div className="text-red-500 text-2xl">
-        Error: {stockDataError?.message || intradayDataError?.message}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+        <div className="text-white text-2xl flex items-center space-x-4">
+          <svg
+            className="animate-spin h-8 w-8 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            ></path>
+          </svg>
+          <span>Loading...</span>
+        </div>
       </div>
     );
   }
 
-  if (status === 404) {
-    return <div className="text-red-500 text-2xl">Stock not found.</div>;
+  if (isStockDetailError || isStockDataError || isIntradayDataError) {
+    return (
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex items-center justify-center">
+        <div className="text-red-600 text-2xl">
+          {stockDetailError?.message ||
+            stockDataError?.message ||
+            intradayDataError?.message ||
+            "Unexpected error"}
+        </div>
+      </div>
+    );
   }
-  const transformedData = Object.entries(
-    intradayData.data["Time Series (5min)"]
-  ).map(([time, values]) => ({
-    time,
-    price: parseFloat((values as { [key: string]: string })["4. close"]),
-  }));
+
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen py-8 px-4">
       <div className="absolute top-4 left-4 z-10">
@@ -134,9 +200,11 @@ function RouteComponent() {
           <>
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-gray-800">
-                Stock Details for {stockDetail.Symbol}
+                Stock Details for {stockDetail.data.Symbol}
               </h1>
-              <p className="text-lg text-gray-500 mt-2">{stockDetail.Name}</p>
+              <p className="text-lg text-gray-500 mt-2">
+                {stockDetail.data.Name}
+              </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="col-span-2 space-y-6">
@@ -150,7 +218,7 @@ function RouteComponent() {
                         Sector
                       </h3>
                       <p className="text-lg text-gray-800">
-                        {stockDetail.Sector}
+                        {stockDetail.data.Sector}
                       </p>
                     </div>
                     <div>
@@ -158,7 +226,7 @@ function RouteComponent() {
                         Industry
                       </h3>
                       <p className="text-lg text-gray-800">
-                        {stockDetail.Industry}
+                        {stockDetail.data.Industry}
                       </p>
                     </div>
                     <div className="col-span-2">
@@ -166,7 +234,7 @@ function RouteComponent() {
                         Description
                       </h3>
                       <p className="text-lg text-gray-800">
-                        {stockDetail.Description}
+                        {stockDetail.data.Description}
                       </p>
                     </div>
                     <div>
@@ -174,7 +242,7 @@ function RouteComponent() {
                         Market Capitalization
                       </h3>
                       <p className="text-lg text-gray-800">
-                        {stockDetail.MarketCapitalization}
+                        {stockDetail.data.MarketCapitalization}
                       </p>
                     </div>
                   </div>
@@ -211,7 +279,7 @@ function RouteComponent() {
                     Stock Performance
                   </h2>
                   <div className="mt-4">
-                    {intradayData ? (
+                    {transformedData ? (
                       <Chart data={transformedData} />
                     ) : (
                       <div className="h-32 bg-blue-200 rounded-md flex justify-center items-center">
@@ -260,6 +328,20 @@ function RouteComponent() {
                       </p>
                     </div>
                   </div>
+                </div>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleUpdate}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>

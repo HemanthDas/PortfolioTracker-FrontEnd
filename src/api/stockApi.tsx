@@ -145,16 +145,24 @@ export const getStockDetailsBySymbol = async (symbol: string) => {
         },
       }
     );
-
+    if (response.status === 400) {
+      return await response.json();
+    }
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error: ${response.status}`);
+      const errorMessage =
+        errorData.message || `HTTP error: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     return await response.json();
   } catch (error) {
     console.error(`Error fetching stock details for symbol ${symbol}:`, error);
-    throw error;
+    if (error instanceof Error) {
+      throw new Error(error.message || "An unexpected error occurred.");
+    } else {
+      throw new Error("An unexpected error occurred.");
+    }
   }
 };
 
