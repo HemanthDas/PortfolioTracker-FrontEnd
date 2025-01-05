@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardAddStockImport } from './routes/dashboard/add-stock'
+import { Route as DashboardStockIdImport } from './routes/dashboard/$stockId'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
 
@@ -34,6 +35,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const DashboardAddStockRoute = DashboardAddStockImport.update({
   id: '/dashboard/add-stock',
   path: '/dashboard/add-stock',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardStockIdRoute = DashboardStockIdImport.update({
+  id: '/dashboard/$stockId',
+  path: '/dashboard/$stockId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/$stockId': {
+      id: '/dashboard/$stockId'
+      path: '/dashboard/$stockId'
+      fullPath: '/dashboard/$stockId'
+      preLoaderRoute: typeof DashboardStockIdImport
+      parentRoute: typeof rootRoute
+    }
     '/dashboard/add-stock': {
       id: '/dashboard/add-stock'
       path: '/dashboard/add-stock'
@@ -97,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/$stockId': typeof DashboardStockIdRoute
   '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -105,6 +120,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/$stockId': typeof DashboardStockIdRoute
   '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -114,6 +130,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/dashboard/$stockId': typeof DashboardStockIdRoute
   '/dashboard/add-stock': typeof DashboardAddStockRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -124,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/register'
+    | '/dashboard/$stockId'
     | '/dashboard/add-stock'
     | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/register'
+    | '/dashboard/$stockId'
     | '/dashboard/add-stock'
     | '/dashboard'
   id:
@@ -138,6 +157,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/auth/register'
+    | '/dashboard/$stockId'
     | '/dashboard/add-stock'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
@@ -147,6 +167,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  DashboardStockIdRoute: typeof DashboardStockIdRoute
   DashboardAddStockRoute: typeof DashboardAddStockRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -155,6 +176,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  DashboardStockIdRoute: DashboardStockIdRoute,
   DashboardAddStockRoute: DashboardAddStockRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -172,6 +194,7 @@ export const routeTree = rootRoute
         "/",
         "/auth/login",
         "/auth/register",
+        "/dashboard/$stockId",
         "/dashboard/add-stock",
         "/dashboard/"
       ]
@@ -184,6 +207,9 @@ export const routeTree = rootRoute
     },
     "/auth/register": {
       "filePath": "auth/register.tsx"
+    },
+    "/dashboard/$stockId": {
+      "filePath": "dashboard/$stockId.tsx"
     },
     "/dashboard/add-stock": {
       "filePath": "dashboard/add-stock.tsx"

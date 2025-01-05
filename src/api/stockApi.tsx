@@ -64,6 +64,35 @@ export const deleteStock = async (id: number) => {
   }
 };
 
+export const getStockByUserIdAndSymbol = async (
+  userId: number,
+  symbol: string
+) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/stocks/user/${userId}/${symbol}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(
+      `Error fetching stock by userId ${userId} and symbol ${symbol}:`,
+      error
+    );
+    throw error;
+  }
+};
 export const getStockById = async (id: number) => {
   try {
     const response = await fetch(`${BACKEND_URL}/api/stocks/${id}`, {
@@ -102,6 +131,51 @@ export const getStocksByUser = async (userId: number) => {
     return await response.json();
   } catch (error) {
     console.error(`Error fetching stocks for userId ${userId}:`, error);
+    throw error;
+  }
+};
+export const getStockDetailsBySymbol = async (symbol: string) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/stocks/details/${symbol}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching stock details for symbol ${symbol}:`, error);
+    throw error;
+  }
+};
+
+export const getIntradayDataBySymbol = async (symbol: string) => {
+  try {
+    const response = await fetch(
+      `${BACKEND_URL}/api/stocks/${symbol}/intra-day`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching intraday data for symbol ${symbol}:`, error);
     throw error;
   }
 };
