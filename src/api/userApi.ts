@@ -1,5 +1,6 @@
 export const createUser = async (username: string) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  console.log("BACKEND_URL", BACKEND_URL);
   try {
     const response = await fetch(`${BACKEND_URL}/api/users`, {
       method: "POST",

@@ -31,9 +31,9 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
   const addNotification = (
     type: NotificationType,
     message: string,
-    duration: number = 3000 // Default duration: 3 seconds
+    duration: number = import.meta.env.VITE_NOTIFICATION_DURATION || 3000 // Default duration: 3 seconds
   ) => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = Math.random().toString(36).substring(2, 11);
     setNotifications((prev) => [...prev, { id, type, message, duration }]);
 
     if (duration > 0) {

@@ -8,7 +8,7 @@ This project is the frontend component of the Portfolio Tracker application, all
 
 - User authentication and session management.
 - Add and track stock investments by entering ticker symbols, quantity, and buy price.
-- Real-time stock validation via backend APIs.c
+- Real-time stock validation via backend APIs.
 - Notification system for user feedback on actions.
 - Responsive design for seamless use across devices.
 
@@ -31,8 +31,8 @@ This project is the frontend component of the Portfolio Tracker application, all
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-repo/portfolio-tracker-frontend.git
-   cd portfolio-tracker-frontend
+   git clone https://github.com/HemanthDas/PortfolioTracker-FrontEnd.git
+   cd PortfolioTracker-Frontend
    ```
 
 2. Install dependencies:
@@ -47,8 +47,8 @@ This project is the frontend component of the Portfolio Tracker application, all
    Create a `.env` file in the root directory and define the following variables:
 
    ```env
-   REACT_APP_API_BASE_URL=http://localhost:8080/api
-   REACT_APP_NOTIFICATION_DURATION=5000
+   VITE_BACKEND_URL=http://localhost:8080/api
+   VITE_NOTIFICATION_DURATION=3000
    ```
 
 4. Start the development server:
@@ -65,11 +65,11 @@ This project is the frontend component of the Portfolio Tracker application, all
 src/
 ├── api/                 # API integration functions
 ├── hooks/               # Custom hooks
-├── pages/               # Page-level components
 ├── routes/              # Route definitions
-├── styles/              # Global styles and Tailwind CSS configuration
+├── assets/              # Static assets like images and fonts
+├── context/             # Context providers for global state management
 ├── utils/               # Utility functions
-└── index.tsx           # Application entry point
+└── main.tsx             # Application entry point
 ```
 
 ## Deployment
@@ -83,6 +83,15 @@ src/
    ```
 
 2. Deploy the contents of the `build/` directory to your hosting provider (e.g., Netlify, Vercel, AWS).
+
+## Hosted URL
+
+The application is deployed on Vercel and can be accessed at [Portfolio Tracker](https://portfolio-tracker-phi-one.vercel.app/auth/login).
+or can copy paste the link here:
+
+```
+https://portfolio-tracker-phi-one.vercel.app/auth/login
+```
 
 ## License
 
